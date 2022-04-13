@@ -1,9 +1,3 @@
-// mod chip8;
-
-// fn main() {
-// println!("Hello World");
-// }
-
 extern crate sdl2;
 
 use sdl2::event::Event;
@@ -56,95 +50,13 @@ pub fn main() {
             }
         }
 
-        //texture.update(None, &cpu.display, 1);
-        //canvas.copy(&texture, None, None);
-        // The rest of the game loop goes here...
-
-        //texture.update(None, &cpu.display, 32);
-        //canvas.copy(&texture, None, None);
-        /*
-        for (y, row) in pixels.iter().enumerate() {
-            for (x, &col) in row.iter().enumerate() {
-                let x = (x as u32) * SCALE_FACTOR;
-                let y = (y as u32) * SCALE_FACTOR;
-
-                self.canvas.set_draw_color(color(col));
-                let _ = self.canvas.fill_rect(Rect::new(
-                    x as i32,
-                    y as i32,
-                    SCALE_FACTOR,
-                    SCALE_FACTOR,
-                ));
-            }
-        }
-        */
-        // for y in 0..32 {
-        // for x in 0..64 {
-        // let pixel = &cpu.display
-        // canvas.fill_rect(Rect::new(x, y, 1, 1));
-        // }
-        // }
-
-        // let mut disp: [u8; 64 * 32] = [0; 64 * 32];
-        // let mut r = 0;
-        // for outer in &cpu.display {
-        //     &disp[r..r + 64].copy_from_slice(outer);
-        //     r += 64;
-        // }
-        // texture.update(None, &disp, 32);
-        // canvas.copy(&texture, None, None);
-
-        //pub fn draw(&mut self, pixels: &[[u8; CHIP8_WIDTH]; CHIP8_HEIGHT]) {
-        //    for (y, row) in pixels.iter().enumerate() {
-        //        for (x, &col) in row.iter().enumerate() {
-        //            let x = (x as u32) * SCALE_FACTOR;
-        //            let y = (y as u32) * SCALE_FACTOR;
-
-        //            self.canvas.set_draw_color(color(col));
-        //            let _ = self.canvas
-        //                .fill_rect(Rect::new(x as i32, y as i32, SCALE_FACTOR, SCALE_FACTOR));
-        //        }
-        //    }
-        //    self.canvas.present();
-        //}
-
-        /*
-        for (y, row) in cpu.display.iter().enumerate() {
-            for (x, &col) in row.iter().enumerate() {
-                canvas.set_draw_color(color(col));
-                let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
-            }
-        }
-        */
-
-        let mut count = 0;
         for (index, pixel) in cpu.display.iter().enumerate() {
             let y = (index / 64);
             let x = (index % 64);
 
-            count += 1;
             canvas.set_draw_color(color(*pixel));
             let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
         }
-
-        println!("{}", count);
-
-        for y in 0..32 {
-            for x in 0..64 {
-                let pixel = cpu.display[(64 * y) + x];
-                canvas.set_draw_color(color(pixel));
-                let _ = canvas.fill_rect(Rect::new(x as i32 + 200, y as i32 + 100, 1, 1));
-            }
-        }
-
-        /*for x in 0..64 {
-            for y in 0..32 {
-                let pixel = cpu.display[(x * 32) + y];
-
-                canvas.set_draw_color(color(pixel));
-                let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
-            }
-        }*/
 
         canvas.present();
         canvas.set_draw_color(Color::RGB(0, 0, 0));

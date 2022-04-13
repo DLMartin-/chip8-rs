@@ -59,7 +59,7 @@ impl Cpu {
     }
 
     fn clear_screen(&mut self) {
-        //TODO
+        self.display.fill(0);
     }
 
     fn jump(&mut self, nnn: u16) {
@@ -78,25 +78,6 @@ impl Cpu {
         self.index = nnn;
     }
 
-    //   fn draw(&mut self, x: u8, y: u8, n: u8) {
-    //     let ypos = self.registers[y as usize];
-    //     let xpos = self.registers[x as usize];
-    //     let sprite = &self.memory[self.index as usize..];
-    //     for j in 0..n {
-    //         for i in 0..8 {
-    //             // screen wrap if necessary
-    //             let y = (ypos + j) & 31;
-    //             let x = (xpos + i) & 63;
-
-    //             // draw each sprite pixel with a XOR operation
-    //             // i.e. toggle the pixel
-    //             // 0x80 = 1000 0000 : allows to check each pixel in the sprite
-    //             if (sprite[j as usize] & (0x80 >> i)) != 0x00 {
-    //                 self.display[y as usize][x as usize] ^= 0xAA;
-    //             }
-    //         }
-    //     }
-
     fn draw(&mut self, x: u8, y: u8, n: u8) {
         let ypos = self.registers[y as usize];
         let xpos = self.registers[x as usize];
@@ -111,11 +92,7 @@ impl Cpu {
                 // i.e. toggle the pixel
                 // 0x80 = 1000 0000 : allows to check each pixel in the sprite
                 if (sprite[j as usize] & (0x80 >> i)) != 0x00 {
-                    if (self.display[(y as usize * 32) + x as usize] != 0) {
-                        self.display[(y as usize * 32) + x as usize] = 0;
-                    } else {
-                        self.display[(y as usize * 32) + x as usize] = 0xAA;
-                    }
+                    self.display[y as usize * 64 + x as usize] ^= 0x1;
                 }
             }
         }
@@ -137,7 +114,4 @@ impl Cpu {
 
         self.memory[512..644].copy_from_slice(&ibm_logo);
     }
-
-    /*
-     */
 }
