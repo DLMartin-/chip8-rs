@@ -5,7 +5,8 @@ const STACK_SIZE: usize = 16;
 pub struct Cpu {
     memory: [u8; FOUR_KB],
     stack: [u16; STACK_SIZE],
-    pub display: [[u8; 64]; 32],
+    //pub display: [[u8; 64]; 32],
+    pub display: [u8; 32 * 64],
     registers: [u8; REGISTER_COUNT],
     index: u16,
     program_counter: u16,
@@ -19,7 +20,7 @@ impl Cpu {
         let mut cpu = Cpu {
             memory: [0; FOUR_KB],
             stack: [0; STACK_SIZE],
-            display: [[0; 64]; 32],
+            display: [0; 64 * 32],
             registers: [0; REGISTER_COUNT],
             index: 0,
             program_counter: 512,
@@ -58,7 +59,7 @@ impl Cpu {
     }
 
     fn clear_screen(&mut self) {
-        //TODO
+        self.display.fill(0);
     }
 
     fn jump(&mut self, nnn: u16) {
@@ -91,11 +92,7 @@ impl Cpu {
                 // i.e. toggle the pixel
                 // 0x80 = 1000 0000 : allows to check each pixel in the sprite
                 if (sprite[j as usize] & (0x80 >> i)) != 0x00 {
-                    if (self.display[y as usize][x as usize] != 0) {
-                        self.display[y as usize][x as usize] = 0;
-                    } else {
-                        self.display[y as usize][x as usize] = 0xAA;
-                    }
+                    self.display[y as usize * 64 + x as usize] ^= 0x1;
                 }
             }
         }
@@ -117,7 +114,4 @@ impl Cpu {
 
         self.memory[512..644].copy_from_slice(&ibm_logo);
     }
-
-    /*
-     */
 }
