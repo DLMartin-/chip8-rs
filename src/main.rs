@@ -32,8 +32,8 @@ pub fn main() {
     let mut canvas = window.into_canvas().build().unwrap();
     let texture_creator = canvas.texture_creator();
 
-    //let mut surface = Surface::new(64, 32, PixelFormatEnum::RGB332).unwrap();
-    //let mut texture = Texture::from_surface(&surface, &texture_creator).unwrap();
+    let mut surface = Surface::new(64, 32, PixelFormatEnum::RGB332).unwrap();
+    let mut texture = Texture::from_surface(&surface, &texture_creator).unwrap();
 
     canvas.set_draw_color(Color::RGB(0, 255, 255));
     canvas.clear();
@@ -55,6 +55,9 @@ pub fn main() {
                 _ => {}
             }
         }
+
+        //texture.update(None, &cpu.display, 1);
+        //canvas.copy(&texture, None, None);
         // The rest of the game loop goes here...
 
         //texture.update(None, &cpu.display, 32);
@@ -115,12 +118,30 @@ pub fn main() {
         */
 
         for (index, pixel) in cpu.display.iter().enumerate() {
-            let y = index / 32;
+            let y = (index / 64);
             let x = (index % 64);
 
             canvas.set_draw_color(color(*pixel));
             let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
         }
+
+        for y in 0..32 {
+            for x in 0..64 {
+                let pixel = cpu.display[(64 * y) + x];
+                canvas.set_draw_color(color(pixel));
+                let _ = canvas.fill_rect(Rect::new(x as i32 + 200, y as i32 + 100, 1, 1));
+            }
+        }
+
+        /*for x in 0..64 {
+            for y in 0..32 {
+                let pixel = cpu.display[(x * 32) + y];
+
+                canvas.set_draw_color(color(pixel));
+                let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
+            }
+        }*/
+
         canvas.present();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
