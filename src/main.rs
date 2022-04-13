@@ -104,11 +104,22 @@ pub fn main() {
         //    }
         //    self.canvas.present();
         //}
+
+        /*
         for (y, row) in cpu.display.iter().enumerate() {
             for (x, &col) in row.iter().enumerate() {
                 canvas.set_draw_color(color(col));
                 let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
             }
+        }
+        */
+
+        for (index, pixel) in cpu.display.iter().enumerate() {
+            let y = index / 64;
+            let x = (index - (y * 64));
+
+            canvas.set_draw_color(color(*pixel));
+            let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
         }
         canvas.present();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
