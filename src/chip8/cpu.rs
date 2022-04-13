@@ -92,7 +92,7 @@ impl Cpu {
                 // i.e. toggle the pixel
                 // 0x80 = 1000 0000 : allows to check each pixel in the sprite
                 if (sprite[j as usize] & (0x80 >> i)) != 0x00 {
-                    self.display[(y as usize * 32) + x as usize] ^= 0xAA;
+                    self.display[(y as usize * 32) + x as usize] ^= 0x01;
                 }
             }
         }

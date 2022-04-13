@@ -115,8 +115,8 @@ pub fn main() {
         */
 
         for (index, pixel) in cpu.display.iter().enumerate() {
-            let y = index / 64;
-            let x = (index - (y * 64));
+            let y = index / 32;
+            let x = (index % 64);
 
             canvas.set_draw_color(color(*pixel));
             let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
