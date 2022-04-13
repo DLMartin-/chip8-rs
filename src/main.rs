@@ -117,13 +117,17 @@ pub fn main() {
         }
         */
 
+        let mut count = 0;
         for (index, pixel) in cpu.display.iter().enumerate() {
             let y = (index / 64);
             let x = (index % 64);
 
+            count += 1;
             canvas.set_draw_color(color(*pixel));
             let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
         }
+
+        println!("{}", count);
 
         for y in 0..32 {
             for x in 0..64 {
