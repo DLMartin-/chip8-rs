@@ -104,12 +104,15 @@ pub fn main() {
         //    }
         //    self.canvas.present();
         //}
+        let mut count = 0;
         for (y, row) in cpu.display.iter().enumerate() {
             for (x, &col) in row.iter().enumerate() {
                 canvas.set_draw_color(color(col));
                 let _ = canvas.fill_rect(Rect::new(x as i32 + 100, y as i32 + 100, 1, 1));
+                count += 1;
             }
         }
+        println!("{}", count);
         canvas.present();
         canvas.set_draw_color(Color::RGB(0, 0, 0));
         canvas.clear();
