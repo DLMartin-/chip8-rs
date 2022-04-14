@@ -49,9 +49,9 @@ impl Cpu {
 
         match (op, x, y, n) {
             (0x0, 0x0, 0xE, 0x0) => self.clear_screen(),
-            (0x0, 0x0, 0xE, 0xE) => panic!("Return from Subroutine not implemented"),
+            (0x0, 0x0, 0xE, 0xE) => self.ret(),
             (0x1, _, _, _) => self.jump(nnn),
-            (0x2, _, _, _) => panic!("Call Subroutine not implemented!"),
+            (0x2, _, _, _) => self.call(nnn),
             (0x3, _, _, _) => panic!("Skip If Equal not implemented!"),
             (0x4, _, _, _) => panic!("Skip If Not Equal not implemented!"),
             (0x5, _, _, 0x0) => panic!("Skip if Registers Equal not implemented!"),
@@ -114,6 +114,25 @@ impl Cpu {
                 }
             }
         }
+    }
+
+    fn call(&mut self, nnn: u16) {
+        if self.stack_pointer as usize == self.stack.len() {
+            panic!("Error: Stack Pointer == maximum size of stack!");
+        }
+
+        self.stack[self.stack_pointer as usize] = self.program_counter;
+        self.stack_pointer += 1;
+        self.program_counter = nnn;
+    }
+
+    fn ret(&mut self) {
+        if self.stack_pointer == 0 {
+            panic!("Error: Stack is empty!")
+        }
+
+        self.program_counter = self.stack[self.stack_pointer as usize];
+        self.stack_pointer -= 1;
     }
 
     fn load_ibm(&mut self) {
