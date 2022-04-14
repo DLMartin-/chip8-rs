@@ -67,12 +67,12 @@ impl Cpu {
             (0xF, _, 0x0, 0x7) => self.set_register_to_delay_timer(x),
             (0xF, _, 0x1, 0x5) => self.set_delay_timer_to_register(x),
             (0xF, _, 0x1, 0x8) => self.set_sound_timer_to_register(x),
-            (0xF, _, 0x1, 0xE) => panic!("Add To Index not implemented"),
-            (0xF, _, 0x0, 0xA) => panic!("Get Key not implemented"),
-            (0xF, _, 0x2, 0x9) => panic!("Font Character not implemented"),
-            (0xF, _, 0x3, 0x3) => panic!("Decimal Converstion not implemented"),
-            (0xF, _, 0x5, 0x5) => panic!("Store Memory not implemented"),
-            (0xF, _, 0x6, 0x5) => panic!("Load Memory not implemented"),
+            (0xF, _, 0x1, 0xE) => self.add_to_index(x),
+            (0xF, _, 0x0, 0xA) => self.get_key(x),
+            (0xF, _, 0x2, 0x9) => self.get_font_character(x),
+            (0xF, _, 0x3, 0x3) => self.binary_coded_decimal_conversion(x),
+            (0xF, _, 0x5, 0x5) => self.store_registers(x),
+            (0xF, _, 0x6, 0x5) => self.load_registers(x),
             _ => panic!("Invalid Operation!"),
         }
     }
@@ -178,6 +178,47 @@ impl Cpu {
 
     fn set_sound_timer_to_register(&mut self, x: u8) {
         self.sound_timer = self.registers[x as usize];
+    }
+
+    fn add_to_index(&mut self, x: u8) {
+        self.index += 8;
+        if self.index > 0x1000 {
+            self.index = self.index & 0x0FFF;
+            self.registers[0xF] = 1;
+        }
+    }
+
+    fn get_key(&mut self, _x: u8) {
+        //TODO: Blocks until key is pressed
+        //Then puts the value of the key pressed into register VX
+        self.program_counter -= 2;
+    }
+
+    fn get_font_character(&mut self, x: u8) {
+        //Index register is set to the address of the characeter in VX.
+        //VX can hold two hex characters, so use the last nibble (0x0F)
+    }
+
+    fn binary_coded_decimal_conversion(&mut self, x: u8) {
+        /*
+        It takes the number in VX (which is one byte, so it can be any number from 0 to 255)
+        and converts it to three decimal digits, storing these digits in memory at the address
+        in the index register I. For example, if VX contains 156 (or 9C in hexadecimal),
+        it would put the number 1 at the address in I, 5 in address I + 1,
+        and 6 in address I + 2.
+         */
+    }
+
+    fn store_registers(&mut self, x: u8) {
+        let mut slice = &mut self.memory[(self.index as usize)..(self.index as usize + x as usize)];
+        slice.copy_from_slice(&self.registers[0..(x as usize)]);
+    }
+
+    fn load_registers(&mut self, x: u8) {
+        let mut slice = &mut self.registers[0..(x as usize)];
+        slice.copy_from_slice(
+            &self.memory[(self.index as usize)..(self.index as usize + x as usize)],
+        );
     }
 
     fn load_ibm(&mut self) {
