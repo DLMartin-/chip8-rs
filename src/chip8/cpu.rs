@@ -48,13 +48,31 @@ impl Cpu {
         let nn: u8 = (opcode & 0x00FF) as u8;
 
         match (op, x, y, n) {
-            (0x0, 0, 0xE, 0) => self.clear_screen(),
+            (0x0, 0x0, 0xE, 0x0) => self.clear_screen(),
+            (0x0, 0x0, 0xE, 0xE) => panic!("Return from Subroutine not implemented"),
             (0x1, _, _, _) => self.jump(nnn),
+            (0x2, _, _, _) => panic!("Call Subroutine not implemented!"),
+            (0x3, _, _, _) => panic!("Skip If Equal not implemented!"),
+            (0x4, _, _, _) => panic!("Skip If Not Equal not implemented!"),
+            (0x5, _, _, 0x0) => panic!("Skip if Registers Equal not implemented!"),
             (0x6, _, _, _) => self.store(x, nn),
             (0x7, _, _, _) => self.add_to_register(x, nn),
+            (0x8, _, _, _) => panic!("ALU not implemented"),
             (0xA, _, _, _) => self.set_index_register(nnn),
+            (0xB, _, _, _) => panic!("Jump with Offset not implemented"),
+            (0xC, _, _, _) => panic!("Random not yet implemted"),
             (0xD, _, _, _) => self.draw(x, y, n),
-            _ => println!("No match"),
+            (0xE, _, _, _) => panic!("Keypad not yet implemented"),
+            (0xF, _, 0x0, 0x7) => panic!("Timers not implemented"),
+            (0xF, _, 0x1, 0x5) => panic!("Timers not implemented"),
+            (0xF, _, 0x1, 0x8) => panic!("Timers not implemented"),
+            (0xF, _, 0x1, 0xE) => panic!("Add To Index not implemented"),
+            (0xF, _, 0x0, 0xA) => panic!("Get Key not implemented"),
+            (0xF, _, 0x2, 0x9) => panic!("Font Character not implemented"),
+            (0xF, _, 0x3, 0x3) => panic!("Decimal Converstion not implemented"),
+            (0xF, _, 0x5, 0x5) => panic!("Store Memory not implemented"),
+            (0xF, _, 0x6, 0x5) => panic!("Load Memory not implemented"),
+            _ => panic!("Invalid Operation!"),
         }
     }
 
