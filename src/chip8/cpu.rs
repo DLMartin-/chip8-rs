@@ -64,9 +64,9 @@ impl Cpu {
             (0xC, _, _, _) => panic!("Random not yet implemted"),
             (0xD, _, _, _) => self.draw(x, y, n),
             (0xE, _, _, _) => panic!("Keypad not yet implemented"),
-            (0xF, _, 0x0, 0x7) => panic!("Timers not implemented"),
-            (0xF, _, 0x1, 0x5) => panic!("Timers not implemented"),
-            (0xF, _, 0x1, 0x8) => panic!("Timers not implemented"),
+            (0xF, _, 0x0, 0x7) => self.set_register_to_delay_timer(x),
+            (0xF, _, 0x1, 0x5) => self.set_delay_timer_to_register(x),
+            (0xF, _, 0x1, 0x8) => self.set_sound_timer_to_register(x),
             (0xF, _, 0x1, 0xE) => panic!("Add To Index not implemented"),
             (0xF, _, 0x0, 0xA) => panic!("Get Key not implemented"),
             (0xF, _, 0x2, 0x9) => panic!("Font Character not implemented"),
@@ -145,7 +145,7 @@ impl Cpu {
 
     fn skip_if_not_equal(&mut self, x: u8, nn: u8) {
         let vx = self.registers[x as usize];
-        if (vx != nn) {
+        if vx != nn {
             self.program_counter += 2;
         }
     }
@@ -154,7 +154,7 @@ impl Cpu {
         let vx = self.registers[x as usize];
         let vy = self.registers[y as usize];
 
-        if (vx == vy) {
+        if vx == vy {
             self.program_counter += 2;
         }
     }
@@ -163,9 +163,21 @@ impl Cpu {
         let vx = self.registers[x as usize];
         let vy = self.registers[y as usize];
 
-        if (vx != vy) {
+        if vx != vy {
             self.program_counter += 2;
         }
+    }
+
+    fn set_register_to_delay_timer(&mut self, x: u8) {
+        self.registers[x as usize] = self.delay_timer;
+    }
+
+    fn set_delay_timer_to_register(&mut self, x: u8) {
+        self.delay_timer = self.registers[x as usize];
+    }
+
+    fn set_sound_timer_to_register(&mut self, x: u8) {
+        self.sound_timer = self.registers[x as usize];
     }
 
     fn load_ibm(&mut self) {
