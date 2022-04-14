@@ -52,12 +52,13 @@ impl Cpu {
             (0x0, 0x0, 0xE, 0xE) => self.ret(),
             (0x1, _, _, _) => self.jump(nnn),
             (0x2, _, _, _) => self.call(nnn),
-            (0x3, _, _, _) => panic!("Skip If Equal not implemented!"),
-            (0x4, _, _, _) => panic!("Skip If Not Equal not implemented!"),
-            (0x5, _, _, 0x0) => panic!("Skip if Registers Equal not implemented!"),
+            (0x3, _, _, _) => self.skip_if_equal(x, nn),
+            (0x4, _, _, _) => self.skip_if_not_equal(x, nn),
+            (0x5, _, _, 0x0) => self.skip_if_registers_equal(x, y),
             (0x6, _, _, _) => self.store(x, nn),
             (0x7, _, _, _) => self.add_to_register(x, nn),
             (0x8, _, _, _) => panic!("ALU not implemented"),
+            (0x9, _, _, 0x0) => self.skip_if_registers_not_equal(x, y),
             (0xA, _, _, _) => self.set_index_register(nnn),
             (0xB, _, _, _) => panic!("Jump with Offset not implemented"),
             (0xC, _, _, _) => panic!("Random not yet implemted"),
@@ -133,6 +134,38 @@ impl Cpu {
 
         self.program_counter = self.stack[self.stack_pointer as usize];
         self.stack_pointer -= 1;
+    }
+
+    fn skip_if_equal(&mut self, x: u8, nn: u8) {
+        let vx = self.registers[x as usize];
+        if (vx == nn) {
+            self.program_counter += 2;
+        }
+    }
+
+    fn skip_if_not_equal(&mut self, x: u8, nn: u8) {
+        let vx = self.registers[x as usize];
+        if (vx != nn) {
+            self.program_counter += 2;
+        }
+    }
+
+    fn skip_if_registers_equal(&mut self, x: u8, y: u8) {
+        let vx = self.registers[x as usize];
+        let vy = self.registers[y as usize];
+
+        if (vx == vy) {
+            self.program_counter += 2;
+        }
+    }
+
+    fn skip_if_registers_not_equal(&mut self, x: u8, y: u8) {
+        let vx = self.registers[x as usize];
+        let vy = self.registers[y as usize];
+
+        if (vx != vy) {
+            self.program_counter += 2;
+        }
     }
 
     fn load_ibm(&mut self) {
