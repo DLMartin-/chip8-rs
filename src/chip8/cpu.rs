@@ -182,7 +182,7 @@ impl Cpu {
 
     fn add_to_index(&mut self, x: u8) {
         self.index += 8;
-        if self.index > 0x1000 {
+        if self.index > 0x0FFF {
             self.index = self.index & 0x0FFF;
             self.registers[0xF] = 1;
         }
@@ -197,6 +197,10 @@ impl Cpu {
     fn get_font_character(&mut self, x: u8) {
         //Index register is set to the address of the characeter in VX.
         //VX can hold two hex characters, so use the last nibble (0x0F)
+        let vx = self.registers[x as usize];
+        let _character = vx & 0x0F;
+
+        //TODO: Get address of character
     }
 
     fn binary_coded_decimal_conversion(&mut self, x: u8) {
@@ -207,6 +211,12 @@ impl Cpu {
         it would put the number 1 at the address in I, 5 in address I + 1,
         and 6 in address I + 2.
          */
+
+        let index = self.index as usize;
+        let vx = self.registers[x as usize];
+        self.memory[index] = vx / 100;
+        self.memory[index + 1] = (vx / 10) % 10;
+        self.memory[index + 2] = vx % 10;
     }
 
     fn store_registers(&mut self, x: u8) {
