@@ -7,7 +7,6 @@ const STACK_SIZE: usize = 16;
 pub struct Cpu {
     memory: [u8; FOUR_KB],
     stack: [u16; STACK_SIZE],
-    //pub display: [[u8; 64]; 32],
     pub display: [u8; 32 * 64],
     registers: [u8; REGISTER_COUNT],
     index: u16,
@@ -15,6 +14,7 @@ pub struct Cpu {
     stack_pointer: u8,
     delay_timer: u8,
     sound_timer: u8,
+    keys: [bool; 16],
 }
 
 impl Cpu {
@@ -29,6 +29,7 @@ impl Cpu {
             stack_pointer: 0,
             delay_timer: 0,
             sound_timer: 0,
+            keys: [false; 16],
         };
 
         cpu.load_ibm();
@@ -108,7 +109,18 @@ impl Cpu {
             (0xB, _, _, _) => self.jump_with_offset(nnn),
             (0xC, _, _, _) => self.randomize_register(x, nn),
             (0xD, _, _, _) => self.draw(x, y, n),
-            (0xE, _, _, _) => panic!("Keypad not yet implemented"),
+            (0xE, _, 0x9, 0xE) => {
+                let x = self.registers[x as usize];
+                if self.keys[x as usize] == true {
+                    self.program_counter += 2;
+                }
+            }
+            (0xE, _, 0xA, 0x1) => {
+                let x = self.registers[x as usize];
+                if self.keys[x as usize] == false {
+                    self.program_counter += 2;
+                }
+            }
             (0xF, _, 0x0, 0x7) => self.set_register_to_delay_timer(x),
             (0xF, _, 0x1, 0x5) => self.set_delay_timer_to_register(x),
             (0xF, _, 0x1, 0x8) => self.set_sound_timer_to_register(x),
