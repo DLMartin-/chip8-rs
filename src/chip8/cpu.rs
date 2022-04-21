@@ -105,7 +105,7 @@ impl Cpu {
             }
             (0x9, _, _, 0x0) => self.skip_if_registers_not_equal(x, y),
             (0xA, _, _, _) => self.set_index_register(nnn),
-            (0xB, _, _, _) => panic!("Jump with Offset not implemented"),
+            (0xB, _, _, _) => self.jump_with_offset(nnn),
             (0xC, _, _, _) => self.randomize_register(x, nn),
             (0xD, _, _, _) => self.draw(x, y, n),
             (0xE, _, _, _) => panic!("Keypad not yet implemented"),
