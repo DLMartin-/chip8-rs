@@ -60,7 +60,49 @@ impl Cpu {
             (0x5, _, _, 0x0) => self.skip_if_registers_equal(x, y),
             (0x6, _, _, _) => self.store(x, nn),
             (0x7, _, _, _) => self.add_to_register(x, nn),
-            (0x8, _, _, _) => panic!("ALU not implemented"),
+            (0x8, _, _, 0x0) => self.registers[x as usize] = self.registers[y as usize],
+            (0x8, _, _, 0x1) => self.registers[x as usize] |= self.registers[y as usize],
+            (0x8, _, _, 0x2) => self.registers[x as usize] &= self.registers[y as usize],
+            (0x8, _, _, 0x3) => self.registers[x as usize] ^= self.registers[y as usize],
+            (0x8, _, _, 0x4) => {
+                let value: u16 =
+                    self.registers[x as usize] as u16 + self.registers[y as usize] as u16;
+                self.registers[0xF] = 0;
+                self.registers[x as usize] = (value & 0xFF) as u8;
+                if value > 0xFF {
+                    self.registers[0xF] = 1;
+                }
+            }
+            (0x8, _, _, 0x5) => {
+                let x = self.registers[x as usize];
+                let y = self.registers[y as usize];
+                self.registers[0xF] = 1;
+                if x < y {
+                    self.registers[0xF] = 0;
+                }
+
+                self.registers[x as usize] = x - y;
+            }
+            (0x8, _, _, 0x6) => {
+                let value = self.registers[y as usize];
+                self.registers[0xF] = 0b0000_0001 & value;
+                self.registers[x as usize] = value >> 1;
+            }
+            (0x8, _, _, 0x7) => {
+                let x = self.registers[x as usize];
+                let y = self.registers[y as usize];
+                self.registers[0xF] = 1;
+                if y < x {
+                    self.registers[0xF] = 0;
+                }
+
+                self.registers[x as usize] = y - x;
+            }
+            (0x8, _, _, 0xE) => {
+                let value = self.registers[y as usize];
+                self.registers[0xF] = 0b1000_0000 & value;
+                self.registers[x as usize] = value << 1;
+            }
             (0x9, _, _, 0x0) => self.skip_if_registers_not_equal(x, y),
             (0xA, _, _, _) => self.set_index_register(nnn),
             (0xB, _, _, _) => panic!("Jump with Offset not implemented"),
