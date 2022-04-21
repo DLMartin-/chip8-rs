@@ -1,3 +1,5 @@
+use rand::Rng;
+
 const FOUR_KB: usize = 4096;
 const REGISTER_COUNT: usize = 16;
 const STACK_SIZE: usize = 16;
@@ -62,7 +64,7 @@ impl Cpu {
             (0x9, _, _, 0x0) => self.skip_if_registers_not_equal(x, y),
             (0xA, _, _, _) => self.set_index_register(nnn),
             (0xB, _, _, _) => panic!("Jump with Offset not implemented"),
-            (0xC, _, _, _) => panic!("Random not yet implemted"),
+            (0xC, _, _, _) => self.randomize_register(x, nn),
             (0xD, _, _, _) => self.draw(x, y, n),
             (0xE, _, _, _) => panic!("Keypad not yet implemented"),
             (0xF, _, 0x0, 0x7) => self.set_register_to_delay_timer(x),
@@ -229,6 +231,12 @@ impl Cpu {
         slice.copy_from_slice(
             &self.memory[(self.index as usize)..(self.index as usize + x as usize)],
         );
+    }
+
+    fn randomize_register(&mut self, x: u8, nn: u8) {
+        let random_number: u8 = rand::thread_rng().gen::<u8>();
+        let random_value = random_number & nn;
+        self.registers[x as usize] = random_value;
     }
 
     fn load_ibm(&mut self) {
