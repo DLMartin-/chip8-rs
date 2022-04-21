@@ -239,6 +239,14 @@ impl Cpu {
         self.registers[x as usize] = random_value;
     }
 
+    // Later versions of BNNN were actually BXNN,
+    // Where it would add nn and the value in V[x]
+    // And jump to that location.
+    fn jump_with_offset(&mut self, nnn: u16) {
+        let jump_location = nnn + self.registers[0] as u16;
+        self.index = jump_location;
+    }
+
     fn load_ibm(&mut self) {
         let ibm_logo: [u8; 132] = [
             0x00, 0xE0, 0xA2, 0x2A, 0x60, 0x0C, 0x61, 0x08, 0xD0, 0x1F, 0x70, 0x09, 0xA2, 0x39,
