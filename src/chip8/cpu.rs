@@ -3,11 +3,12 @@ use rand::Rng;
 const FOUR_KB: usize = 4096;
 const REGISTER_COUNT: usize = 16;
 const STACK_SIZE: usize = 16;
+const DISPLAY_SIZE: usize = 64 * 32 * 4; // 64 pixels wide x 32 pixels tall, 1 pixel = 4 bytes
 
 pub struct Cpu {
     memory: [u8; FOUR_KB],
     stack: [u16; STACK_SIZE],
-    pub display: [u8; 32 * 64],
+    pub display: [u32; DISPLAY_SIZE],
     registers: [u8; REGISTER_COUNT],
     index: u16,
     program_counter: u16,
@@ -22,7 +23,7 @@ impl Cpu {
         let mut cpu = Cpu {
             memory: [0; FOUR_KB],
             stack: [0; STACK_SIZE],
-            display: [0; 64 * 32],
+            display: [0; DISPLAY_SIZE],
             registers: [0; REGISTER_COUNT],
             index: 0,
             program_counter: 512,
@@ -168,7 +169,9 @@ impl Cpu {
                 // i.e. toggle the pixel
                 // 0x80 = 1000 0000 : allows to check each pixel in the sprite
                 if (sprite[j as usize] & (0x80 >> i)) != 0x00 {
-                    self.display[y as usize * 64 + x as usize] ^= 0x1;
+                    let idx = (y as usize * 64) + x as usize;
+                    self.display[idx] = 0x00aa6600;
+                    //Look into u32::to_le_bytes (or be? idk if its little endian or big endian :))
                 }
             }
         }
